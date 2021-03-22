@@ -4,8 +4,8 @@ A simple library to check root access in device.
 
 These are the current checks/tricks we are using to give an indication of root.
 
-- checkIsRoot
-- checkIsRootedWithBusyBox (only Android)
+- isRoot
+- isRootedWithBusyBox (only Android)
 
 
 ## Usage
@@ -28,11 +28,11 @@ try {
 }
 ```
 
-### checkIsRootedWithBusyBox
+### isRootedWithBusyBox
 
 ```dart
 try {
- final result = await RootDetector.checkIsRootedWithBusyBox; // type data is bool
+ final result = await RootDetector.isRootedWithBusyBox; // type data is bool
  return result;
 } on PlatformException catch(e){
  // TODO: handling your error, whenever have error from native code

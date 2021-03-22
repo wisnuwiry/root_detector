@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 
 class RootDetector {
   static const MethodChannel _channel =
-      const MethodChannel('"space.wisnuwiry/root_detector"');
+      const MethodChannel("space.wisnuwiry/root_detector");
 
   /// TO check status device is rooted or not
   ///
@@ -56,13 +56,13 @@ class RootDetector {
   ///
   /// ```dart
   /// try {
-  ///  final result = await RootDetector.checkIsRootedWithBusyBox; // type data is bool
+  ///  final result = await RootDetector.isRootedWithBusyBox; // type data is bool
   ///  return result;
   /// } on PlatformException catch(e){
   ///  // TODO: handling your error, whenever have error from native code
   /// }
   /// ```
-  static Future<bool> get checkIsRootedWithBusyBox async {
+  static Future<bool> get isRootedWithBusyBox async {
     final bool result = await _channel.invokeMethod('checkIsRootedWithBusyBox');
     return result;
   }
