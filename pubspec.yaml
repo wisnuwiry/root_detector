@@ -1,0 +1,27 @@
+name: root_detector
+description: A new flutter plugin project.
+version: 0.0.1
+homepage: "https://wisnuwiry.space"
+repository: https://github.com/wisnuwiry/root_detector/
+issue_tracker: https://github.com/wisnuwiry/root_detector/issues
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+  flutter: ">=1.20.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: space.wisnuwiry.root_detector
+        pluginClass: RootDetectorPlugin
+      ios:
+        pluginClass: RootDetectorPlugin
