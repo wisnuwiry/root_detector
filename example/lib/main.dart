@@ -27,7 +27,7 @@ class _MyAppState extends State<MyApp> {
     String isRooted;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      isRooted = await RootDetector.isRooted?.toString();
+      isRooted = (await RootDetector.isRooted).toString();
     } on PlatformException {
       isRooted = 'Failed to get root info in a device.';
     }

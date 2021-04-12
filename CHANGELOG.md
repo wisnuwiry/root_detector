@@ -6,3 +6,7 @@
 
 * Fix channel name
 * Change `checkIsRootedWithBusyBox` to `isRootedWithBusyBox`
+
+## 0.0.3
+
+* Migrate to null safety
