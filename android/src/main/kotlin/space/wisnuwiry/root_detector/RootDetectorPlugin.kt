@@ -12,6 +12,7 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import java.lang.IllegalArgumentException
+import android.os.Build
 
 /** RootDetectorPlugin */
 class RootDetectorPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
@@ -24,17 +25,20 @@ class RootDetectorPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private lateinit var rootBeer: RootBeer
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-        channel = MethodChannel(flutterPluginBinding.binaryMessenger, "space.wisnuwiry/root_detector")
+        channel =
+            MethodChannel(flutterPluginBinding.binaryMessenger, "space.wisnuwiry/root_detector")
         channel.setMethodCallHandler(this)
         context = flutterPluginBinding.applicationContext
         rootBeer = RootBeer(context)
     }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
+        val ignoreSimulator = call.arguments == true
+
         if (call.method == "checkIsRooted") {
-            checkIsRooted(result)
+            checkIsRooted(result, ignoreSimulator)
         } else if (call.method == "checkIsRootedWithBusyBox") {
-            checkIsRootedWithBusyBox(result)
+            checkIsRootedWithBusyBox(result, ignoreSimulator)
         } else {
             result.notImplemented()
         }
@@ -42,10 +46,14 @@ class RootDetectorPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
 
     // Get check root status in normal devices
-    private fun checkIsRooted(@NonNull result: Result) {
+    private fun checkIsRooted(@NonNull result: Result, ignoreSimulator: Boolean) {
         try {
             val isRoot = rootBeer.isRooted
-            result.success(isRoot)
+            if (isRoot && ignoreSimulator && isEmulator()) {
+                result.success(false)
+            } else {
+                result.success(isRoot)
+            }
         } catch (e: IllegalArgumentException) {
             result.error(e.message, e.message, e.stackTrace)
         }
@@ -56,10 +64,14 @@ class RootDetectorPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     // - All OnePlus Devices
     // - Moto E
     // - OPPO R9m (ColorOS 3.0,Android 5.1,Android security patch January 5, 2018 )
-    private fun checkIsRootedWithBusyBox(@NonNull result: Result) {
+    private fun checkIsRootedWithBusyBox(@NonNull result: Result, ignoreSimulator: Boolean) {
         try {
             val isRoot = rootBeer.isRootedWithBusyBoxCheck
-            result.success(isRoot)
+            if (isRoot && ignoreSimulator && isEmulator()) {
+                result.success(false)
+            } else {
+                result.success(isRoot)
+            }
         } catch (e: IllegalArgumentException) {
             result.error(e.message, e.message, e.stackTrace)
         }
@@ -76,4 +88,27 @@ class RootDetectorPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {}
 
     override fun onDetachedFromActivity() {}
+
+    /**
+     * A simple emulator-detection based on the flutter tools detection logic and a couple of legacy
+     * detection systems
+     */
+    private fun isEmulator(): Boolean {
+        return (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")
+                || Build.FINGERPRINT.startsWith("generic")
+                || Build.FINGERPRINT.startsWith("unknown")
+                || Build.HARDWARE.contains("goldfish")
+                || Build.HARDWARE.contains("ranchu")
+                || Build.MODEL.contains("google_sdk")
+                || Build.MODEL.contains("Emulator")
+                || Build.MODEL.contains("Android SDK built for x86")
+                || Build.MANUFACTURER.contains("Genymotion")
+                || Build.PRODUCT.contains("sdk_google")
+                || Build.PRODUCT.contains("google_sdk")
+                || Build.PRODUCT.contains("sdk")
+                || Build.PRODUCT.contains("sdk_x86")
+                || Build.PRODUCT.contains("vbox86p")
+                || Build.PRODUCT.contains("emulator")
+                || Build.PRODUCT.contains("simulator"))
+    }
 }
