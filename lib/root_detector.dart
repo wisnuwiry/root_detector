@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 
@@ -22,6 +23,11 @@ class RootDetector {
   /// - Moto E
   /// - OPPO R9m (ColorOS 3.0,Android 5.1, Android security patch January 5, 2018 )
   ///
+  /// you can ignore the root check / jailbreak when the device is not
+  /// a real device (Simulator / Emulator) by `ignoreSimulator` make it `true`
+  ///
+  /// `ignoreSimulator = true`
+  ///
   /// Example for usage:
   ///
   /// ```dart
@@ -33,14 +39,21 @@ class RootDetector {
   /// }
   /// ```
   static Future<bool> isRooted({
-    /// Params only for Android
+    /// Params [busyBox] works only for Android
     bool busyBox = false,
+    bool ignoreSimulator = false,
   }) async {
-    if (busyBox == true) {
-      return await _channel.invokeMethod('checkIsRootedWithBusyBox');
+    if (busyBox == true && Platform.isAndroid) {
+      return await _channel.invokeMethod(
+        'checkIsRootedWithBusyBox',
+        ignoreSimulator,
+      );
     }
 
-    final result = await _channel.invokeMethod('checkIsRooted');
+    final result = await _channel.invokeMethod(
+      'checkIsRooted',
+      ignoreSimulator,
+    );
     return result;
   }
 

@@ -1,6 +1,6 @@
 name: root_detector
-description: A new flutter plugin project.
-version: 0.0.5
+description: A library to check root access/jailbreak in android & ios device
+version: 0.0.6
 homepage: "https://wisnuwiry.space"
 repository: https://github.com/wisnuwiry/root_detector/
 issue_tracker: https://github.com/wisnuwiry/root_detector/issues

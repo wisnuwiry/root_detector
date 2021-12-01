@@ -18,3 +18,8 @@
 ### 0.0.5
 
 * Update Rootbear version
+
+### 0.0.6
+
+* Implement in iOS
+* Add feature ignoreSimulator
