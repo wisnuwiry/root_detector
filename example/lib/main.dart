@@ -24,22 +24,28 @@ class _MyAppState extends State<MyApp> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-    String isRooted;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      isRooted = (await RootDetector.isRooted).toString();
+      await RootDetector.isRooted(
+        busyBox: true,
+        ignoreSimulator: false,
+      ).then((value) {
+        setState(() {
+          _isRooted = value.toString();
+        });
+      });
     } on PlatformException {
-      isRooted = 'Failed to get root info in a device.';
+      setState(() {
+        _isRooted = 'Failed to get root status.';
+      });
     }
+  }
 
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _isRooted = isRooted;
-    });
+  @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
   }
 
   @override
