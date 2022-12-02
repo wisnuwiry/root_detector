@@ -1,9 +1,8 @@
 package space.wisnuwiry.root_detector
 
 import android.content.Context
-import androidx.annotation.NonNull
+import android.os.Build
 import com.scottyab.rootbeer.RootBeer
-
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -11,8 +10,6 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import java.lang.IllegalArgumentException
-import android.os.Build
 
 /** RootDetectorPlugin */
 class RootDetectorPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
@@ -24,7 +21,7 @@ class RootDetectorPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private lateinit var context: Context
     private lateinit var rootBeer: RootBeer
 
-    override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+    override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel =
             MethodChannel(flutterPluginBinding.binaryMessenger, "space.wisnuwiry/root_detector")
         channel.setMethodCallHandler(this)
@@ -32,7 +29,7 @@ class RootDetectorPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         rootBeer = RootBeer(context)
     }
 
-    override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
+    override fun onMethodCall(call: MethodCall, result: Result) {
         val ignoreSimulator = call.arguments == true
 
         if (call.method == "checkIsRooted") {
@@ -46,7 +43,7 @@ class RootDetectorPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
 
     // Get check root status in normal devices
-    private fun checkIsRooted(@NonNull result: Result, ignoreSimulator: Boolean) {
+    private fun checkIsRooted(result: Result, ignoreSimulator: Boolean) {
         try {
             val isRoot = rootBeer.isRooted
             if (isRoot && ignoreSimulator && isEmulator()) {
@@ -55,7 +52,7 @@ class RootDetectorPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 result.success(isRoot)
             }
         } catch (e: IllegalArgumentException) {
-            result.error(e.message, e.message, e.stackTrace)
+            result.error(e.message.toString(), e.message, e.stackTrace)
         }
     }
 
@@ -64,7 +61,7 @@ class RootDetectorPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     // - All OnePlus Devices
     // - Moto E
     // - OPPO R9m (ColorOS 3.0,Android 5.1,Android security patch January 5, 2018 )
-    private fun checkIsRootedWithBusyBox(@NonNull result: Result, ignoreSimulator: Boolean) {
+    private fun checkIsRootedWithBusyBox(result: Result, ignoreSimulator: Boolean) {
         try {
             val isRoot = rootBeer.isRootedWithBusyBoxCheck
             if (isRoot && ignoreSimulator && isEmulator()) {
@@ -73,11 +70,11 @@ class RootDetectorPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 result.success(isRoot)
             }
         } catch (e: IllegalArgumentException) {
-            result.error(e.message, e.message, e.stackTrace)
+            result.error(e.message.toString(), e.message, e.stackTrace)
         }
     }
 
-    override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
     }
 
